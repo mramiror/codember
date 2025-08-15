@@ -6,7 +6,7 @@ fn steps_to_exit(mut nums: Vec<i32>) -> i32 {
     let mut steps: i32 = 0;
     let n: i32 = nums.len() as i32;
 
-    while pos >= 0 && pos < nums.len() {
+    while pos >= 0 && pos < n {
         let salto = nums[pos as usize];
         nums[pos as usize] += 1;
         pos += salto;
