@@ -5,14 +5,32 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
-func stepsToExit(nums []int) bool {
-	pos := 0
-	steps := 0
-	n := len(nums)
+func stepsToExit(nums []int) int {
+	pos, steps := 0, 0
+	for pos >= 0 && pos < len(nums) {
+		jump := nums[pos]
+		nums[pos]++
+		pos += jump
+		steps++
+	}
+	return steps
+}
 
+func parseLine(line string) ([]int, error) {
+	parts := strings.Fields(line)
+	nums := make([]int, len(parts))
+	for i, p := range parts {
+		v, err := strconv.Atoi(p)
+		if err != nil {
+			return nil, fmt.Errorf("parse %q: %w", p, err)
+		}
+		nums[i] = v
+	}
+	return nums, nil
 }
 
 func main() {
@@ -23,7 +41,7 @@ func main() {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	total_steps, steps_last_line := 0, 0
+	totalSteps, stepsLastLine := 0, 0
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -31,15 +49,18 @@ func main() {
 			continue
 		}
 
-		nums := strings.Split(line, "")
+		nums, err := parseLine(line)
+		if err != nil {
+			log.Fatalf("Error parsing line: %v", err)
+		}
 
 		steps := stepsToExit(nums)
 
-		total_steps += steps
-		steps_last_line = steps
+		totalSteps += steps
+		stepsLastLine = steps
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("Error reading lines: %v", err)
 	}
-	fmt.Printf("submit %d-%d\n", total_steps, steps_last_line)
+	fmt.Printf("submit %d-%d\n", totalSteps, stepsLastLine)
 }
